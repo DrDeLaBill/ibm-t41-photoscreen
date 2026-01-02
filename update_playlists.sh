@@ -42,7 +42,7 @@ for url in "${URLS[@]}"; do
     --sleep-requests 10 \
     --sleep-interval 15 \
     --max-sleep-interval 30 \
-    --concurent-fragments 10 \
+    --concurrent-fragments 10 \
     --download-archive "$YTDLP_ARCHIVE" \
     -f "bestvideo[height<=${SCREEN_HEIGHT}]+bestaudio/best[height<=${SCREEN_HEIGHT}]" \
     -o "$RAW_DIR/%(playlist_title)s/%(upload_date)s - %(title)s.%(ext)s" \
