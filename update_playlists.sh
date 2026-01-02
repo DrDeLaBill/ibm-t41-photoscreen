@@ -35,9 +35,14 @@ for url in "${URLS[@]}"; do
   # download into RAW_DIR; let yt-dlp create folder by playlist title
   # output: RAW_DIR/%(playlist_title)s/%(upload_date)s - %(title)s.%(ext)s
   yt-dlp $YTDLP_OPTS \
+    --proxy "${PROXY:-}" \
     --cookies "${COOKIES_PATH:-}" \
     --add-header "Accept-Language: en-US,en;q=0.9" \
-    --proxy "${PROXY:-}" \
+    --impersonate chrome-107 \
+    --sleep-requests 10 \
+    --sleep-interval 15 \
+    --max-sleep-interval 30 \
+    --concurent-fragments 10 \
     --download-archive "$YTDLP_ARCHIVE" \
     -f "bestvideo[height<=${SCREEN_HEIGHT}]+bestaudio/best[height<=${SCREEN_HEIGHT}]" \
     -o "$RAW_DIR/%(playlist_title)s/%(upload_date)s - %(title)s.%(ext)s" \
@@ -69,10 +74,18 @@ for playlist_dir in "$RAW_DIR"/*; do
 
     echo "Transcoding $src -> $dest" | tee -a "$LOGFILE"
     # transcode: scale height to SCREEN_HEIGHT, keep aspect (-2), force fps TARGET_FPS, audio -> mp3
-    ffmpeg -y -hide_banner -loglevel error -i "$src" \
+    ffmpeg \
+      -i "$src" \
       -vf "scale=-2:${SCREEN_HEIGHT},fps=${TARGET_FPS}" \
-      -c:v libx264 $FFMPEG_OPTS \
+      -pix_fmt yuv420p \
+      -profile:v baseline \
+      -level 3.0 \
+      -x264-params ref=1:bframes=0:cabac=0 \
+      -preset veryfast \
+      -crf 23 \
       -c:a libmp3lame -ar 44100 -ac 2 -b:a 128k \
+      -y -hide_banner -loglevel error \
+      -c:v libx264 \
       "$dest" >> "$LOGFILE" 2>&1 || echo "ffmpeg failed for $src (see $LOGFILE)" | tee -a "$LOGFILE"
   done
   shopt -u nullglob
