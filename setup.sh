@@ -8,10 +8,10 @@ fi
 
 SERVICE_DIR="/etc/systemd/system"
 REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
-ENV_FILE="$SCRIPT_DIR/.env"
+ENV_FILE="$REPO_DIR/.env"
 
 if [ ! -f "$ENV_FILE" ]; then
-  echo "ERROR: .env not found in $SCRIPT_DIR. Please create it and edit variables."
+  echo "ERROR: .env not found in $REPO_DIR. Please create it and edit variables."
   exit 1
 fi
 
