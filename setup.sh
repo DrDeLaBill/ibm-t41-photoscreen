@@ -35,6 +35,7 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 echo "[1/7]Setup: creating directories..."
+mkdir -p "$BASE_DIR/tmp"
 mkdir -p "$BASE_DIR" "$RAW_DIR" "$LOG_DIR"
 chown -R "$RUN_USER":"$RUN_USER" "$BASE_DIR"
 

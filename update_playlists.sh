@@ -34,7 +34,7 @@ for url in "${URLS[@]}"; do
 
   # download into RAW_DIR; let yt-dlp create folder by playlist title
   # output: RAW_DIR/%(playlist_title)s/%(upload_date)s - %(title)s.%(ext)s
-  yt-dlp $YTDLP_OPTS \
+  yt-dlp \
     --proxy "${PROXY:-}" \
     --cookies "${COOKIES_PATH:-}" \
     --add-header "Accept-Language: en-US,en;q=0.9" \

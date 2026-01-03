@@ -61,7 +61,17 @@ shuf "$PLAYLIST_TMP" > "$SHUFFLED" || cp "$PLAYLIST_TMP" "$SHUFFLED"
 
 # Run looped playback with mplayer
 # We'll run as RUN_USER (use su -c)
-PLAYER_CMD="mplayer -vo fbdev2 -ao alsa -autosync $TARGET_FPS -framedrop -zoom -fs -loop 0 -really-quiet -playlist $SHUFFLED"
+PLAYER_CMD="mplayer \
+  -vo fbdev2 \
+  -ao alsa \
+  -autosync $TARGET_FPS \
+  -framedrop \
+  -zoom \
+  -xy 1024 \
+  -aspect 4:3 \
+  -loop 0 \
+  -really-quiet \
+  -playlist $SHUFFLED"
 echo "Starting player: $PLAYER_CMD"
 
 # Run in an infinite restart loop — systemd also restarts on failure, but add robustness
