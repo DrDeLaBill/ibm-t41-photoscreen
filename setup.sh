@@ -69,7 +69,7 @@ Wants=network-online.target
 Type=oneshot
 EnvironmentFile=$ENV_FILE
 User=$RUN_USER
-ExecStart=/usr/local/bin/update_playlists.sh
+ExecStart=/sbin/openvt -c 1 -s -- /usr/local/bin/update_playlists.sh
 WorkingDirectory=/home/$RUN_USER
 EOF
 cat > "$SERVICE_DIR/update-playlists.timer" <<EOF
@@ -92,7 +92,7 @@ After=multi-user.target
 Type=simple
 EnvironmentFile=$ENV_FILE
 User=$RUN_USER
-ExecStart=/usr/local/bin/frame.sh
+ExecStart=/sbin/openvt -c 1 -s -- /usr/local/bin/frame.sh
 Restart=always
 RestartSec=5
 

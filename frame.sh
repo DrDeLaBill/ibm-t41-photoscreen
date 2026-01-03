@@ -33,17 +33,19 @@ setterm -cursor off >/dev/tty1 2>/dev/null || true
 setterm -blank 0 >/dev/tty1 2>/dev/null || true
 
 # Build playlist (temporary file)
-PLAYLIST_TMP="/tmp/photo_playlist.txt"
+PLAYLIST_TMP="$BASE_DIR/tmp/photo_playlist.txt"
 rm -f "$PLAYLIST_TMP"
 touch "$PLAYLIST_TMP"
 chown "$RUN_USER":"$RUN_USER" "$PLAYLIST_TMP"
 
 # Find all converted folders with suffix _<height>
 shopt -s nullglob
-for d in "$CONVERTED_BASE"/*_"$SCREEN_HEIGHT"; do
+for d in "$BASE_DIR"/*_"$SCREEN_HEIGHT"; do
   [ -d "$d" ] || continue
   # append all mp4 files; shuffle later
-  find "$d" -maxdepth 1 -type f -iname '*.mp4' -print >> "$PLAYLIST_TMP"
+  find "$d" -maxdepth 1 -type f \( \
+    -iname '*.mp4' -o -iname '*.mkv' -o -iname '*.avi' \
+  \) -print >> "$PLAYLIST_TMP"
 done
 shopt -u nullglob
 
