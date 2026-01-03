@@ -15,10 +15,17 @@ fi
 # Prepare console
 # Switch to tty1, clear it and disable cursor / blank
 TERM_TTY="/dev/tty1"
-# Try to switch to tty1 if running from systemd (optional)
-if [ -e "$TERM_TTY" ]; then
-  /usr/bin/chvt 1 || true
-  /bin/kill -SIGSTOP $$ || true 2>/dev/null || true
+
+# проверяем, существует ли устройство и доступно ли оно для записи
+if [ -c "$TERM_TTY" ] && [ -w "$TERM_TTY" ]; then
+  # если мы не уже на этой консоли (tty)
+  CURTTY=$(tty 2>/dev/null || echo "no-tty")
+  if [ "$CURTTY" != "$TERM_TTY" ]; then
+    /usr/bin/chvt 1 2>/dev/null || true   # переключиться на tty1 (нужен root)
+  fi
+  # подаём команды в конкретный tty, а не в текущий
+  printf '\033[?25l' > "$TERM_TTY"   # hide cursor on tty1
+  clear > "$TERM_TTY"
 fi
 
 # Hide cursor and disable blanking
