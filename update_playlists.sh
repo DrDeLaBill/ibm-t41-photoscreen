@@ -76,7 +76,14 @@ for playlist_dir in "$RAW_DIR"/*; do
     # transcode: scale height to SCREEN_HEIGHT, keep aspect (-2), force fps TARGET_FPS, audio -> mp3
     ffmpeg \
       -i "$src" \
-      -vf "scale=-2:${SCREEN_HEIGHT},fps=${TARGET_FPS}" \
+      -vf " \
+        scale=-2:${SCREEN_HEIGHT}, \
+        eq=contrast=0.9:brightness=0.02:saturation=0.6, \
+        hue=s=0, \
+        noise=alls=12:allf=t, \
+        tblend=all_mode=average, \
+        fps=${TARGET_FPS} \
+      " \
       -pix_fmt yuv420p \
       -profile:v baseline \
       -level 3.0 \

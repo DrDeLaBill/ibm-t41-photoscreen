@@ -69,7 +69,6 @@ Wants=network-online.target
 
 [Service]
 Type=oneshot
-EnvironmentFile=/etc/photoscreen.env
 User=$RUN_USER
 ExecStart=/usr/local/bin/update_playlists.sh
 WorkingDirectory=/home/$RUN_USER
@@ -92,7 +91,7 @@ After=multi-user.target
 
 [Service]
 Type=simple
-EnvironmentFile=/etc/photoscreen.env
+Environment=TERM=linux
 User=$RUN_USER
 ExecStart=/usr/local/bin/frame.sh
 Restart=always
