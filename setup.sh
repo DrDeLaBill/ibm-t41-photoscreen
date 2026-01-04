@@ -35,7 +35,6 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 echo "[1/7]Setup: creating directories..."
-mkdir -p "$BASE_DIR/tmp"
 mkdir -p "$BASE_DIR" "$RAW_DIR" "$LOG_DIR"
 chown -R "$RUN_USER":"$RUN_USER" "$BASE_DIR"
 
@@ -70,7 +69,7 @@ Wants=network-online.target
 Type=oneshot
 EnvironmentFile=$ENV_FILE
 User=$RUN_USER
-ExecStart=/sbin/openvt -c 1 -s -- /usr/local/bin/update_playlists.sh
+ExecStart=/usr/local/bin/update_playlists.sh
 WorkingDirectory=/home/$RUN_USER
 EOF
 cat > "$SERVICE_DIR/update-playlists.timer" <<EOF
@@ -93,7 +92,7 @@ After=multi-user.target
 Type=simple
 EnvironmentFile=$ENV_FILE
 User=$RUN_USER
-ExecStart=/sbin/openvt -c 1 -s -- /usr/local/bin/frame.sh
+ExecStart=/usr/local/bin/frame.sh
 Restart=always
 RestartSec=5
 

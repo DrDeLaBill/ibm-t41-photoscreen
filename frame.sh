@@ -34,6 +34,7 @@ setterm -blank 0 >/dev/tty1 2>/dev/null || true
 
 # Build playlist (temporary file)
 PLAYLIST_TMP="$BASE_DIR/tmp/photo_playlist.txt"
+mkdir -p "$BASE_DIR/tmp"
 rm -f "$PLAYLIST_TMP"
 touch "$PLAYLIST_TMP"
 chown "$RUN_USER":"$RUN_USER" "$PLAYLIST_TMP"
