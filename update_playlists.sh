@@ -11,6 +11,18 @@ else
   exit 1
 fi
 
+SKIP_YTDLP=0
+
+for arg in "$@"; do
+  case "$arg" in
+    --no-download|--skip-yt|--skip-ytdlp)
+      SKIP_YTDLP=1
+      ;;
+    *)
+      ;;
+  esac
+done
+
 # ensure dirs
 mkdir -p "$RAW_DIR" "$LOG_DIR"
 chown -R "$RUN_USER":"$RUN_USER" "$BASE_DIR"
@@ -30,25 +42,29 @@ for url in "${URLS[@]}"; do
     continue
   fi
 
-  echo "=== $(date) Starting download for $url" | tee -a "$LOGFILE"
-
   # download into RAW_DIR; let yt-dlp create folder by playlist title
   # output: RAW_DIR/%(playlist_title)s/%(upload_date)s - %(title)s.%(ext)s
-  yt-dlp \
-    --proxy "${PROXY:-}" \
-    --cookies "${COOKIES_PATH:-}" \
-    --add-header "Accept-Language: en-US,en;q=0.9" \
-    --impersonate chrome-107 \
-    --sleep-requests 10 \
-    --sleep-interval 15 \
-    --max-sleep-interval 30 \
-    --concurrent-fragments 10 \
-    --download-archive "$YTDLP_ARCHIVE" \
-    -f "bestvideo[height<=${SCREEN_HEIGHT}]+bestaudio/best[height<=${SCREEN_HEIGHT}]" \
-    -o "$RAW_DIR/%(playlist_title)s/%(upload_date)s - %(title)s.%(ext)s" \
-    "$url" >> "$LOGFILE" 2>&1 || echo "yt-dlp returned non-zero for $url (continuing), check $LOGFILE" | tee -a "$LOGFILE"
+  if [ "$SKIP_YTDLP" -eq 0 ]; then
+    echo "=== $(date) Starting download for $url" | tee -a "$LOGFILE"
+    
+    yt-dlp \
+      --proxy "${PROXY:-}" \
+      --cookies "${COOKIES_PATH:-}" \
+      --add-header "Accept-Language: en-US,en;q=0.9" \
+      --impersonate chrome-107 \
+      --sleep-requests 10 \
+      --sleep-interval 15 \
+      --max-sleep-interval 30 \
+      --concurrent-fragments 10 \
+      --download-archive "$YTDLP_ARCHIVE" \
+      -f "bestvideo[height<=${SCREEN_HEIGHT}]+bestaudio/best[height<=${SCREEN_HEIGHT}]" \
+      -o "$RAW_DIR/%(playlist_title)s/%(upload_date)s - %(title)s.%(ext)s" \
+      "$url" >> "$LOGFILE" 2>&1 || echo "yt-dlp returned non-zero for $url (continuing), check $LOGFILE" | tee -a "$LOGFILE"
 
-  echo "=== $(date) Finished download attempt for $url" | tee -a "$LOGFILE"
+    echo "=== $(date) Finished download attempt for $url" | tee -a "$LOGFILE"
+  else
+    echo "=== $(date) yt-dlp skipped by flag"
+  fi
 done
 
 # After download, transcode newly downloaded files per playlist into CONVERTED folders
@@ -78,10 +94,11 @@ for playlist_dir in "$RAW_DIR"/*; do
       -i "$src" \
       -vf " \
         scale=-2:${SCREEN_HEIGHT}, \
-        eq=contrast=0.9:brightness=0.02:saturation=0.6, \
-        hue=s=0, \
-        noise=alls=12:allf=t, \
+        eq=contrast=0.95:brightness='0.02+0.01*sin(2*PI*t)':saturation=0.85, \
+        colorchannelmixer=1.0:0.25:0.08:0:0.9:0.18:0:0.05:0.85, \
+        noise=alls=10:allf=t, \
         tblend=all_mode=average, \
+        vignette=PI/5 \
         fps=${TARGET_FPS} \
       " \
       -pix_fmt yuv420p \
