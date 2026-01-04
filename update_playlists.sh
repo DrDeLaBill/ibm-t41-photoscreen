@@ -98,7 +98,7 @@ for playlist_dir in "$RAW_DIR"/*; do
         colorchannelmixer=1.0:0.25:0.08:0:0.9:0.18:0:0.05:0.85, \
         noise=alls=10:allf=t, \
         tblend=all_mode=average, \
-        vignette=PI/5 \
+        vignette=PI/5, \
         fps=${TARGET_FPS} \
       " \
       -pix_fmt yuv420p \
