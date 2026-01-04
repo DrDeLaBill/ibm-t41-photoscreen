@@ -14,6 +14,7 @@ if [ ! -f "$ENV_FILE" ]; then
   echo "ERROR: .env not found in $REPO_DIR. Please create it and edit variables."
   exit 1
 fi
+echo ".env file path: $ENV_FILE"
 
 # Загрузим .env, но в безопасном режиме:
 set -a
@@ -57,6 +58,7 @@ chmod +x "$REPO_DIR/update_playlists.sh"
 echo "[5/7] Creating symlinks in /usr/local/bin..."
 ln -sf "$REPO_DIR/frame.sh" /usr/local/bin/frame.sh
 ln -sf "$REPO_DIR/update_playlists.sh" /usr/local/bin/update_playlists.sh
+ln -sf "$REPO_DIR/.env" /etc/photoscreen.env
 
 echo "[6/7] Installing systemd services..."
 cat > "$SERVICE_DIR/update-playlists.service" <<EOF
@@ -67,7 +69,7 @@ Wants=network-online.target
 
 [Service]
 Type=oneshot
-EnvironmentFile=$ENV_FILE
+EnvironmentFile=/etc/photoscreen.env
 User=$RUN_USER
 ExecStart=/usr/local/bin/update_playlists.sh
 WorkingDirectory=/home/$RUN_USER
@@ -90,7 +92,7 @@ After=multi-user.target
 
 [Service]
 Type=simple
-EnvironmentFile=$ENV_FILE
+EnvironmentFile=/etc/photoscreen.env
 User=$RUN_USER
 ExecStart=/usr/local/bin/frame.sh
 Restart=always
