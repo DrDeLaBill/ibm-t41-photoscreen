@@ -94,11 +94,7 @@ for playlist_dir in "$RAW_DIR"/*; do
       -i "$src" \
       -vf " \
         scale=-2:${SCREEN_HEIGHT}, \
-        eq=contrast=0.95:brightness='0.02+0.01*sin(2*PI*t)':saturation=0.85, \
-        colorchannelmixer=1.0:0.25:0.08:0:0.9:0.18:0:0.05:0.85, \
-        noise=alls=10:allf=t, \
-        tblend=all_mode=average, \
-        vignette=PI/5, \
+        ${FFMPEG_OPTS}, \
         fps=${TARGET_FPS} \
       " \
       -pix_fmt yuv420p \
